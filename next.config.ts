@@ -11,6 +11,7 @@ const config: NextConfig = {
   experimental: {
     serverActions: { bodySizeLimit: '2mb' },
     authInterrupts: true,
+    agentUpgrade: 'security',
   },
   async headers() {
     return [
