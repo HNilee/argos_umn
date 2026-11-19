@@ -1,11 +1,11 @@
-CREATE TYPE "public"."account_kind" AS ENUM('system', 'member');--> statement-breakpoint
-CREATE TYPE "public"."media_kind" AS ENUM('image', 'video');--> statement-breakpoint
-CREATE TYPE "public"."media_purpose" AS ENUM('gallery', 'logo', 'avatar', 'carousel');--> statement-breakpoint
-CREATE TYPE "public"."media_source" AS ENUM('upload', 'drive', 'youtube');--> statement-breakpoint
-CREATE TYPE "public"."member_status" AS ENUM('onboarded', 'offboarded');--> statement-breakpoint
-CREATE TYPE "public"."project_status" AS ENUM('done', 'on_progress', 'cancelled');--> statement-breakpoint
-CREATE TYPE "public"."request_status" AS ENUM('pending', 'approved', 'rejected');--> statement-breakpoint
-CREATE TYPE "public"."system_role" AS ENUM('president', 'vice_president', 'secretary');--> statement-breakpoint
+CREATE TYPE "argos"."account_kind" AS ENUM('system', 'member');--> statement-breakpoint
+CREATE TYPE "argos"."media_kind" AS ENUM('image', 'video');--> statement-breakpoint
+CREATE TYPE "argos"."media_purpose" AS ENUM('gallery', 'logo', 'avatar', 'carousel');--> statement-breakpoint
+CREATE TYPE "argos"."media_source" AS ENUM('upload', 'drive', 'youtube');--> statement-breakpoint
+CREATE TYPE "argos"."member_status" AS ENUM('onboarded', 'offboarded');--> statement-breakpoint
+CREATE TYPE "argos"."project_status" AS ENUM('done', 'on_progress', 'cancelled');--> statement-breakpoint
+CREATE TYPE "argos"."request_status" AS ENUM('pending', 'approved', 'rejected');--> statement-breakpoint
+CREATE TYPE "argos"."system_role" AS ENUM('president', 'vice_president', 'secretary');--> statement-breakpoint
 CREATE TABLE "accounts" (
 	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
 	"username" text NOT NULL,
@@ -187,26 +187,26 @@ CREATE TABLE "site_content" (
 	"updated_at" timestamp with time zone DEFAULT now() NOT NULL
 );
 --> statement-breakpoint
-ALTER TABLE "activities" ADD CONSTRAINT "activities_logo_media_id_media_id_fk" FOREIGN KEY ("logo_media_id") REFERENCES "public"."media"("id") ON DELETE set null ON UPDATE no action;--> statement-breakpoint
-ALTER TABLE "activity_members" ADD CONSTRAINT "activity_members_activity_id_activities_id_fk" FOREIGN KEY ("activity_id") REFERENCES "public"."activities"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
-ALTER TABLE "activity_members" ADD CONSTRAINT "activity_members_member_id_members_id_fk" FOREIGN KEY ("member_id") REFERENCES "public"."members"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
-ALTER TABLE "audit_logs" ADD CONSTRAINT "audit_logs_actor_account_id_accounts_id_fk" FOREIGN KEY ("actor_account_id") REFERENCES "public"."accounts"("id") ON DELETE set null ON UPDATE no action;--> statement-breakpoint
-ALTER TABLE "carousel_slides" ADD CONSTRAINT "carousel_slides_media_id_media_id_fk" FOREIGN KEY ("media_id") REFERENCES "public"."media"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
-ALTER TABLE "involvement_requests" ADD CONSTRAINT "involvement_requests_member_id_members_id_fk" FOREIGN KEY ("member_id") REFERENCES "public"."members"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
-ALTER TABLE "involvement_requests" ADD CONSTRAINT "involvement_requests_project_id_projects_id_fk" FOREIGN KEY ("project_id") REFERENCES "public"."projects"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
-ALTER TABLE "involvement_requests" ADD CONSTRAINT "involvement_requests_activity_id_activities_id_fk" FOREIGN KEY ("activity_id") REFERENCES "public"."activities"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
-ALTER TABLE "involvement_requests" ADD CONSTRAINT "involvement_requests_decided_by_accounts_id_fk" FOREIGN KEY ("decided_by") REFERENCES "public"."accounts"("id") ON DELETE set null ON UPDATE no action;--> statement-breakpoint
-ALTER TABLE "media" ADD CONSTRAINT "media_project_id_projects_id_fk" FOREIGN KEY ("project_id") REFERENCES "public"."projects"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
-ALTER TABLE "media" ADD CONSTRAINT "media_activity_id_activities_id_fk" FOREIGN KEY ("activity_id") REFERENCES "public"."activities"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
-ALTER TABLE "member_positions" ADD CONSTRAINT "member_positions_member_id_members_id_fk" FOREIGN KEY ("member_id") REFERENCES "public"."members"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
-ALTER TABLE "member_positions" ADD CONSTRAINT "member_positions_position_id_positions_id_fk" FOREIGN KEY ("position_id") REFERENCES "public"."positions"("id") ON DELETE restrict ON UPDATE no action;--> statement-breakpoint
-ALTER TABLE "members" ADD CONSTRAINT "members_account_id_accounts_id_fk" FOREIGN KEY ("account_id") REFERENCES "public"."accounts"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
-ALTER TABLE "members" ADD CONSTRAINT "members_photo_media_id_media_id_fk" FOREIGN KEY ("photo_media_id") REFERENCES "public"."media"("id") ON DELETE set null ON UPDATE no action;--> statement-breakpoint
-ALTER TABLE "project_members" ADD CONSTRAINT "project_members_project_id_projects_id_fk" FOREIGN KEY ("project_id") REFERENCES "public"."projects"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
-ALTER TABLE "project_members" ADD CONSTRAINT "project_members_member_id_members_id_fk" FOREIGN KEY ("member_id") REFERENCES "public"."members"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
-ALTER TABLE "projects" ADD CONSTRAINT "projects_logo_media_id_media_id_fk" FOREIGN KEY ("logo_media_id") REFERENCES "public"."media"("id") ON DELETE set null ON UPDATE no action;--> statement-breakpoint
-ALTER TABLE "sessions" ADD CONSTRAINT "sessions_account_id_accounts_id_fk" FOREIGN KEY ("account_id") REFERENCES "public"."accounts"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
-ALTER TABLE "site_content" ADD CONSTRAINT "site_content_updated_by_accounts_id_fk" FOREIGN KEY ("updated_by") REFERENCES "public"."accounts"("id") ON DELETE set null ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "activities" ADD CONSTRAINT "activities_logo_media_id_media_id_fk" FOREIGN KEY ("logo_media_id") REFERENCES "argos"."media"("id") ON DELETE set null ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "activity_members" ADD CONSTRAINT "activity_members_activity_id_activities_id_fk" FOREIGN KEY ("activity_id") REFERENCES "argos"."activities"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "activity_members" ADD CONSTRAINT "activity_members_member_id_members_id_fk" FOREIGN KEY ("member_id") REFERENCES "argos"."members"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "audit_logs" ADD CONSTRAINT "audit_logs_actor_account_id_accounts_id_fk" FOREIGN KEY ("actor_account_id") REFERENCES "argos"."accounts"("id") ON DELETE set null ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "carousel_slides" ADD CONSTRAINT "carousel_slides_media_id_media_id_fk" FOREIGN KEY ("media_id") REFERENCES "argos"."media"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "involvement_requests" ADD CONSTRAINT "involvement_requests_member_id_members_id_fk" FOREIGN KEY ("member_id") REFERENCES "argos"."members"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "involvement_requests" ADD CONSTRAINT "involvement_requests_project_id_projects_id_fk" FOREIGN KEY ("project_id") REFERENCES "argos"."projects"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "involvement_requests" ADD CONSTRAINT "involvement_requests_activity_id_activities_id_fk" FOREIGN KEY ("activity_id") REFERENCES "argos"."activities"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "involvement_requests" ADD CONSTRAINT "involvement_requests_decided_by_accounts_id_fk" FOREIGN KEY ("decided_by") REFERENCES "argos"."accounts"("id") ON DELETE set null ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "media" ADD CONSTRAINT "media_project_id_projects_id_fk" FOREIGN KEY ("project_id") REFERENCES "argos"."projects"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "media" ADD CONSTRAINT "media_activity_id_activities_id_fk" FOREIGN KEY ("activity_id") REFERENCES "argos"."activities"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "member_positions" ADD CONSTRAINT "member_positions_member_id_members_id_fk" FOREIGN KEY ("member_id") REFERENCES "argos"."members"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "member_positions" ADD CONSTRAINT "member_positions_position_id_positions_id_fk" FOREIGN KEY ("position_id") REFERENCES "argos"."positions"("id") ON DELETE restrict ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "members" ADD CONSTRAINT "members_account_id_accounts_id_fk" FOREIGN KEY ("account_id") REFERENCES "argos"."accounts"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "members" ADD CONSTRAINT "members_photo_media_id_media_id_fk" FOREIGN KEY ("photo_media_id") REFERENCES "argos"."media"("id") ON DELETE set null ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "project_members" ADD CONSTRAINT "project_members_project_id_projects_id_fk" FOREIGN KEY ("project_id") REFERENCES "argos"."projects"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "project_members" ADD CONSTRAINT "project_members_member_id_members_id_fk" FOREIGN KEY ("member_id") REFERENCES "argos"."members"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "projects" ADD CONSTRAINT "projects_logo_media_id_media_id_fk" FOREIGN KEY ("logo_media_id") REFERENCES "argos"."media"("id") ON DELETE set null ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "sessions" ADD CONSTRAINT "sessions_account_id_accounts_id_fk" FOREIGN KEY ("account_id") REFERENCES "argos"."accounts"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "site_content" ADD CONSTRAINT "site_content_updated_by_accounts_id_fk" FOREIGN KEY ("updated_by") REFERENCES "argos"."accounts"("id") ON DELETE set null ON UPDATE no action;--> statement-breakpoint
 CREATE INDEX "audit_logs_created_idx" ON "audit_logs" USING btree ("created_at");--> statement-breakpoint
 CREATE UNIQUE INDEX "request_pending_project" ON "involvement_requests" USING btree ("member_id","project_id") WHERE "involvement_requests"."status" = 'pending' and "involvement_requests"."project_id" is not null;--> statement-breakpoint
 CREATE UNIQUE INDEX "request_pending_activity" ON "involvement_requests" USING btree ("member_id","activity_id") WHERE "involvement_requests"."status" = 'pending' and "involvement_requests"."activity_id" is not null;--> statement-breakpoint

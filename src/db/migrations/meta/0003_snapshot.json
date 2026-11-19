@@ -4,9 +4,9 @@
   "version": "7",
   "dialect": "postgresql",
   "tables": {
-    "public.accounts": {
+    "argos.accounts": {
       "name": "accounts",
-      "schema": "",
+      "schema": "argos",
       "columns": {
         "id": {
           "name": "id",
@@ -37,7 +37,7 @@
         "kind": {
           "name": "kind",
           "type": "account_kind",
-          "typeSchema": "public",
+          "typeSchema": "argos",
           "primaryKey": false,
           "notNull": true,
           "default": "'member'"
@@ -45,7 +45,7 @@
         "system_role": {
           "name": "system_role",
           "type": "system_role",
-          "typeSchema": "public",
+          "typeSchema": "argos",
           "primaryKey": false,
           "notNull": false
         },
@@ -93,9 +93,9 @@
       "checkConstraints": {},
       "isRLSEnabled": false
     },
-    "public.activities": {
+    "argos.activities": {
       "name": "activities",
-      "schema": "",
+      "schema": "argos",
       "columns": {
         "id": {
           "name": "id",
@@ -182,6 +182,7 @@
           "name": "activities_logo_media_id_media_id_fk",
           "tableFrom": "activities",
           "tableTo": "media",
+          "schemaTo": "argos",
           "columnsFrom": [
             "logo_media_id"
           ],
@@ -206,9 +207,9 @@
       "checkConstraints": {},
       "isRLSEnabled": false
     },
-    "public.activity_members": {
+    "argos.activity_members": {
       "name": "activity_members",
-      "schema": "",
+      "schema": "argos",
       "columns": {
         "activity_id": {
           "name": "activity_id",
@@ -229,6 +230,7 @@
           "name": "activity_members_activity_id_activities_id_fk",
           "tableFrom": "activity_members",
           "tableTo": "activities",
+          "schemaTo": "argos",
           "columnsFrom": [
             "activity_id"
           ],
@@ -242,6 +244,7 @@
           "name": "activity_members_member_id_members_id_fk",
           "tableFrom": "activity_members",
           "tableTo": "members",
+          "schemaTo": "argos",
           "columnsFrom": [
             "member_id"
           ],
@@ -266,9 +269,9 @@
       "checkConstraints": {},
       "isRLSEnabled": false
     },
-    "public.audit_logs": {
+    "argos.audit_logs": {
       "name": "audit_logs",
-      "schema": "",
+      "schema": "argos",
       "columns": {
         "id": {
           "name": "id",
@@ -337,6 +340,7 @@
           "name": "audit_logs_actor_account_id_accounts_id_fk",
           "tableFrom": "audit_logs",
           "tableTo": "accounts",
+          "schemaTo": "argos",
           "columnsFrom": [
             "actor_account_id"
           ],
@@ -353,9 +357,9 @@
       "checkConstraints": {},
       "isRLSEnabled": false
     },
-    "public.carousel_slides": {
+    "argos.carousel_slides": {
       "name": "carousel_slides",
-      "schema": "",
+      "schema": "argos",
       "columns": {
         "id": {
           "name": "id",
@@ -418,6 +422,7 @@
           "name": "carousel_slides_media_id_media_id_fk",
           "tableFrom": "carousel_slides",
           "tableTo": "media",
+          "schemaTo": "argos",
           "columnsFrom": [
             "media_id"
           ],
@@ -434,9 +439,9 @@
       "checkConstraints": {},
       "isRLSEnabled": false
     },
-    "public.involvement_requests": {
+    "argos.involvement_requests": {
       "name": "involvement_requests",
-      "schema": "",
+      "schema": "argos",
       "columns": {
         "id": {
           "name": "id",
@@ -473,7 +478,7 @@
         "status": {
           "name": "status",
           "type": "request_status",
-          "typeSchema": "public",
+          "typeSchema": "argos",
           "primaryKey": false,
           "notNull": true,
           "default": "'pending'"
@@ -529,7 +534,7 @@
             }
           ],
           "isUnique": true,
-          "where": "\"involvement_requests\".\"status\" = 'pending' and \"involvement_requests\".\"project_id\" is not null",
+          "where": "\"argos\".\"involvement_requests\".\"status\" = 'pending' and \"argos\".\"involvement_requests\".\"project_id\" is not null",
           "concurrently": false,
           "method": "btree",
           "with": {}
@@ -551,7 +556,7 @@
             }
           ],
           "isUnique": true,
-          "where": "\"involvement_requests\".\"status\" = 'pending' and \"involvement_requests\".\"activity_id\" is not null",
+          "where": "\"argos\".\"involvement_requests\".\"status\" = 'pending' and \"argos\".\"involvement_requests\".\"activity_id\" is not null",
           "concurrently": false,
           "method": "btree",
           "with": {}
@@ -562,6 +567,7 @@
           "name": "involvement_requests_member_id_members_id_fk",
           "tableFrom": "involvement_requests",
           "tableTo": "members",
+          "schemaTo": "argos",
           "columnsFrom": [
             "member_id"
           ],
@@ -575,6 +581,7 @@
           "name": "involvement_requests_project_id_projects_id_fk",
           "tableFrom": "involvement_requests",
           "tableTo": "projects",
+          "schemaTo": "argos",
           "columnsFrom": [
             "project_id"
           ],
@@ -588,6 +595,7 @@
           "name": "involvement_requests_activity_id_activities_id_fk",
           "tableFrom": "involvement_requests",
           "tableTo": "activities",
+          "schemaTo": "argos",
           "columnsFrom": [
             "activity_id"
           ],
@@ -601,6 +609,7 @@
           "name": "involvement_requests_decided_by_accounts_id_fk",
           "tableFrom": "involvement_requests",
           "tableTo": "accounts",
+          "schemaTo": "argos",
           "columnsFrom": [
             "decided_by"
           ],
@@ -617,14 +626,14 @@
       "checkConstraints": {
         "request_single_target": {
           "name": "request_single_target",
-          "value": "num_nonnulls(\"involvement_requests\".\"project_id\", \"involvement_requests\".\"activity_id\") = 1"
+          "value": "num_nonnulls(\"argos\".\"involvement_requests\".\"project_id\", \"argos\".\"involvement_requests\".\"activity_id\") = 1"
         }
       },
       "isRLSEnabled": false
     },
-    "public.login_attempts": {
+    "argos.login_attempts": {
       "name": "login_attempts",
-      "schema": "",
+      "schema": "argos",
       "columns": {
         "id": {
           "name": "id",
@@ -710,9 +719,9 @@
       "checkConstraints": {},
       "isRLSEnabled": false
     },
-    "public.media": {
+    "argos.media": {
       "name": "media",
-      "schema": "",
+      "schema": "argos",
       "columns": {
         "id": {
           "name": "id",
@@ -724,21 +733,21 @@
         "purpose": {
           "name": "purpose",
           "type": "media_purpose",
-          "typeSchema": "public",
+          "typeSchema": "argos",
           "primaryKey": false,
           "notNull": true
         },
         "kind": {
           "name": "kind",
           "type": "media_kind",
-          "typeSchema": "public",
+          "typeSchema": "argos",
           "primaryKey": false,
           "notNull": true
         },
         "source": {
           "name": "source",
           "type": "media_source",
-          "typeSchema": "public",
+          "typeSchema": "argos",
           "primaryKey": false,
           "notNull": true
         },
@@ -837,7 +846,7 @@
             }
           ],
           "isUnique": true,
-          "where": "\"media\".\"is_cover\" and \"media\".\"project_id\" is not null",
+          "where": "\"argos\".\"media\".\"is_cover\" and \"argos\".\"media\".\"project_id\" is not null",
           "concurrently": false,
           "method": "btree",
           "with": {}
@@ -853,7 +862,7 @@
             }
           ],
           "isUnique": true,
-          "where": "\"media\".\"is_cover\" and \"media\".\"activity_id\" is not null",
+          "where": "\"argos\".\"media\".\"is_cover\" and \"argos\".\"media\".\"activity_id\" is not null",
           "concurrently": false,
           "method": "btree",
           "with": {}
@@ -894,6 +903,7 @@
           "name": "media_project_id_projects_id_fk",
           "tableFrom": "media",
           "tableTo": "projects",
+          "schemaTo": "argos",
           "columnsFrom": [
             "project_id"
           ],
@@ -907,6 +917,7 @@
           "name": "media_activity_id_activities_id_fk",
           "tableFrom": "media",
           "tableTo": "activities",
+          "schemaTo": "argos",
           "columnsFrom": [
             "activity_id"
           ],
@@ -923,14 +934,14 @@
       "checkConstraints": {
         "media_single_owner": {
           "name": "media_single_owner",
-          "value": "num_nonnulls(\"media\".\"project_id\", \"media\".\"activity_id\") <= 1"
+          "value": "num_nonnulls(\"argos\".\"media\".\"project_id\", \"argos\".\"media\".\"activity_id\") <= 1"
         }
       },
       "isRLSEnabled": false
     },
-    "public.member_positions": {
+    "argos.member_positions": {
       "name": "member_positions",
-      "schema": "",
+      "schema": "argos",
       "columns": {
         "id": {
           "name": "id",
@@ -1000,6 +1011,7 @@
           "name": "member_positions_member_id_members_id_fk",
           "tableFrom": "member_positions",
           "tableTo": "members",
+          "schemaTo": "argos",
           "columnsFrom": [
             "member_id"
           ],
@@ -1013,6 +1025,7 @@
           "name": "member_positions_position_id_positions_id_fk",
           "tableFrom": "member_positions",
           "tableTo": "positions",
+          "schemaTo": "argos",
           "columnsFrom": [
             "position_id"
           ],
@@ -1029,9 +1042,9 @@
       "checkConstraints": {},
       "isRLSEnabled": false
     },
-    "public.members": {
+    "argos.members": {
       "name": "members",
-      "schema": "",
+      "schema": "argos",
       "columns": {
         "id": {
           "name": "id",
@@ -1080,7 +1093,7 @@
         "status": {
           "name": "status",
           "type": "member_status",
-          "typeSchema": "public",
+          "typeSchema": "argos",
           "primaryKey": false,
           "notNull": true,
           "default": "'onboarded'"
@@ -1148,6 +1161,7 @@
           "name": "members_account_id_accounts_id_fk",
           "tableFrom": "members",
           "tableTo": "accounts",
+          "schemaTo": "argos",
           "columnsFrom": [
             "account_id"
           ],
@@ -1161,6 +1175,7 @@
           "name": "members_photo_media_id_media_id_fk",
           "tableFrom": "members",
           "tableTo": "media",
+          "schemaTo": "argos",
           "columnsFrom": [
             "photo_media_id"
           ],
@@ -1192,9 +1207,9 @@
       "checkConstraints": {},
       "isRLSEnabled": false
     },
-    "public.positions": {
+    "argos.positions": {
       "name": "positions",
-      "schema": "",
+      "schema": "argos",
       "columns": {
         "id": {
           "name": "id",
@@ -1261,9 +1276,9 @@
       "checkConstraints": {},
       "isRLSEnabled": false
     },
-    "public.project_members": {
+    "argos.project_members": {
       "name": "project_members",
-      "schema": "",
+      "schema": "argos",
       "columns": {
         "project_id": {
           "name": "project_id",
@@ -1284,6 +1299,7 @@
           "name": "project_members_project_id_projects_id_fk",
           "tableFrom": "project_members",
           "tableTo": "projects",
+          "schemaTo": "argos",
           "columnsFrom": [
             "project_id"
           ],
@@ -1297,6 +1313,7 @@
           "name": "project_members_member_id_members_id_fk",
           "tableFrom": "project_members",
           "tableTo": "members",
+          "schemaTo": "argos",
           "columnsFrom": [
             "member_id"
           ],
@@ -1321,9 +1338,9 @@
       "checkConstraints": {},
       "isRLSEnabled": false
     },
-    "public.project_proposals": {
+    "argos.project_proposals": {
       "name": "project_proposals",
-      "schema": "",
+      "schema": "argos",
       "columns": {
         "id": {
           "name": "id",
@@ -1359,7 +1376,7 @@
         "status": {
           "name": "status",
           "type": "request_status",
-          "typeSchema": "public",
+          "typeSchema": "argos",
           "primaryKey": false,
           "notNull": true,
           "default": "'pending'"
@@ -1425,6 +1442,7 @@
           "name": "project_proposals_member_id_members_id_fk",
           "tableFrom": "project_proposals",
           "tableTo": "members",
+          "schemaTo": "argos",
           "columnsFrom": [
             "member_id"
           ],
@@ -1438,6 +1456,7 @@
           "name": "project_proposals_decided_by_accounts_id_fk",
           "tableFrom": "project_proposals",
           "tableTo": "accounts",
+          "schemaTo": "argos",
           "columnsFrom": [
             "decided_by"
           ],
@@ -1451,6 +1470,7 @@
           "name": "project_proposals_project_id_projects_id_fk",
           "tableFrom": "project_proposals",
           "tableTo": "projects",
+          "schemaTo": "argos",
           "columnsFrom": [
             "project_id"
           ],
@@ -1467,14 +1487,14 @@
       "checkConstraints": {
         "proposal_reject_feedback": {
           "name": "proposal_reject_feedback",
-          "value": "\"project_proposals\".\"status\" <> 'rejected' or length(trim(coalesce(\"project_proposals\".\"decision_note\", ''))) > 0"
+          "value": "\"argos\".\"project_proposals\".\"status\" <> 'rejected' or length(trim(coalesce(\"argos\".\"project_proposals\".\"decision_note\", ''))) > 0"
         }
       },
       "isRLSEnabled": false
     },
-    "public.project_timeline_items": {
+    "argos.project_timeline_items": {
       "name": "project_timeline_items",
-      "schema": "",
+      "schema": "argos",
       "columns": {
         "id": {
           "name": "id",
@@ -1517,7 +1537,7 @@
         "status": {
           "name": "status",
           "type": "timeline_status",
-          "typeSchema": "public",
+          "typeSchema": "argos",
           "primaryKey": false,
           "notNull": true,
           "default": "'not_yet'"
@@ -1572,6 +1592,7 @@
           "name": "project_timeline_items_project_id_projects_id_fk",
           "tableFrom": "project_timeline_items",
           "tableTo": "projects",
+          "schemaTo": "argos",
           "columnsFrom": [
             "project_id"
           ],
@@ -1588,14 +1609,14 @@
       "checkConstraints": {
         "timeline_dates": {
           "name": "timeline_dates",
-          "value": "\"project_timeline_items\".\"end_date\" >= \"project_timeline_items\".\"start_date\""
+          "value": "\"argos\".\"project_timeline_items\".\"end_date\" >= \"argos\".\"project_timeline_items\".\"start_date\""
         }
       },
       "isRLSEnabled": false
     },
-    "public.projects": {
+    "argos.projects": {
       "name": "projects",
-      "schema": "",
+      "schema": "argos",
       "columns": {
         "id": {
           "name": "id",
@@ -1659,7 +1680,7 @@
         "status": {
           "name": "status",
           "type": "project_status",
-          "typeSchema": "public",
+          "typeSchema": "argos",
           "primaryKey": false,
           "notNull": true,
           "default": "'on_progress'"
@@ -1710,6 +1731,7 @@
           "name": "projects_logo_media_id_media_id_fk",
           "tableFrom": "projects",
           "tableTo": "media",
+          "schemaTo": "argos",
           "columnsFrom": [
             "logo_media_id"
           ],
@@ -1734,9 +1756,9 @@
       "checkConstraints": {},
       "isRLSEnabled": false
     },
-    "public.sessions": {
+    "argos.sessions": {
       "name": "sessions",
-      "schema": "",
+      "schema": "argos",
       "columns": {
         "token_hash": {
           "name": "token_hash",
@@ -1786,6 +1808,7 @@
           "name": "sessions_account_id_accounts_id_fk",
           "tableFrom": "sessions",
           "tableTo": "accounts",
+          "schemaTo": "argos",
           "columnsFrom": [
             "account_id"
           ],
@@ -1802,9 +1825,9 @@
       "checkConstraints": {},
       "isRLSEnabled": false
     },
-    "public.site_content": {
+    "argos.site_content": {
       "name": "site_content",
-      "schema": "",
+      "schema": "argos",
       "columns": {
         "key": {
           "name": "key",
@@ -1838,6 +1861,7 @@
           "name": "site_content_updated_by_accounts_id_fk",
           "tableFrom": "site_content",
           "tableTo": "accounts",
+          "schemaTo": "argos",
           "columnsFrom": [
             "updated_by"
           ],
@@ -1854,9 +1878,9 @@
       "checkConstraints": {},
       "isRLSEnabled": false
     },
-    "public.timeline_requests": {
+    "argos.timeline_requests": {
       "name": "timeline_requests",
-      "schema": "",
+      "schema": "argos",
       "columns": {
         "id": {
           "name": "id",
@@ -1880,14 +1904,14 @@
         "kind": {
           "name": "kind",
           "type": "timeline_request_kind",
-          "typeSchema": "public",
+          "typeSchema": "argos",
           "primaryKey": false,
           "notNull": true
         },
         "proposed_status": {
           "name": "proposed_status",
           "type": "timeline_status",
-          "typeSchema": "public",
+          "typeSchema": "argos",
           "primaryKey": false,
           "notNull": false
         },
@@ -1919,7 +1943,7 @@
         "status": {
           "name": "status",
           "type": "request_status",
-          "typeSchema": "public",
+          "typeSchema": "argos",
           "primaryKey": false,
           "notNull": true,
           "default": "'pending'"
@@ -1981,7 +2005,7 @@
             }
           ],
           "isUnique": true,
-          "where": "\"timeline_requests\".\"status\" = 'pending'",
+          "where": "\"argos\".\"timeline_requests\".\"status\" = 'pending'",
           "concurrently": false,
           "method": "btree",
           "with": {}
@@ -1992,6 +2016,7 @@
           "name": "timeline_requests_item_id_project_timeline_items_id_fk",
           "tableFrom": "timeline_requests",
           "tableTo": "project_timeline_items",
+          "schemaTo": "argos",
           "columnsFrom": [
             "item_id"
           ],
@@ -2005,6 +2030,7 @@
           "name": "timeline_requests_member_id_members_id_fk",
           "tableFrom": "timeline_requests",
           "tableTo": "members",
+          "schemaTo": "argos",
           "columnsFrom": [
             "member_id"
           ],
@@ -2018,6 +2044,7 @@
           "name": "timeline_requests_decided_by_accounts_id_fk",
           "tableFrom": "timeline_requests",
           "tableTo": "accounts",
+          "schemaTo": "argos",
           "columnsFrom": [
             "decided_by"
           ],
@@ -2034,32 +2061,32 @@
       "checkConstraints": {
         "timeline_request_payload": {
           "name": "timeline_request_payload",
-          "value": "(\"timeline_requests\".\"kind\" = 'status' and \"timeline_requests\".\"proposed_status\" is not null) or (\"timeline_requests\".\"kind\" = 'dates' and \"timeline_requests\".\"proposed_start\" is not null and \"timeline_requests\".\"proposed_end\" >= \"timeline_requests\".\"proposed_start\")"
+          "value": "(\"argos\".\"timeline_requests\".\"kind\" = 'status' and \"argos\".\"timeline_requests\".\"proposed_status\" is not null) or (\"argos\".\"timeline_requests\".\"kind\" = 'dates' and \"argos\".\"timeline_requests\".\"proposed_start\" is not null and \"argos\".\"timeline_requests\".\"proposed_end\" >= \"argos\".\"timeline_requests\".\"proposed_start\")"
         }
       },
       "isRLSEnabled": false
     }
   },
   "enums": {
-    "public.account_kind": {
+    "argos.account_kind": {
       "name": "account_kind",
-      "schema": "public",
+      "schema": "argos",
       "values": [
         "system",
         "member"
       ]
     },
-    "public.media_kind": {
+    "argos.media_kind": {
       "name": "media_kind",
-      "schema": "public",
+      "schema": "argos",
       "values": [
         "image",
         "video"
       ]
     },
-    "public.media_purpose": {
+    "argos.media_purpose": {
       "name": "media_purpose",
-      "schema": "public",
+      "schema": "argos",
       "values": [
         "gallery",
         "logo",
@@ -2067,26 +2094,26 @@
         "carousel"
       ]
     },
-    "public.media_source": {
+    "argos.media_source": {
       "name": "media_source",
-      "schema": "public",
+      "schema": "argos",
       "values": [
         "upload",
         "drive",
         "youtube"
       ]
     },
-    "public.member_status": {
+    "argos.member_status": {
       "name": "member_status",
-      "schema": "public",
+      "schema": "argos",
       "values": [
         "onboarded",
         "offboarded"
       ]
     },
-    "public.project_status": {
+    "argos.project_status": {
       "name": "project_status",
-      "schema": "public",
+      "schema": "argos",
       "values": [
         "open",
         "on_progress",
@@ -2094,42 +2121,44 @@
         "cancelled"
       ]
     },
-    "public.request_status": {
+    "argos.request_status": {
       "name": "request_status",
-      "schema": "public",
+      "schema": "argos",
       "values": [
         "pending",
         "approved",
         "rejected"
       ]
     },
-    "public.system_role": {
+    "argos.system_role": {
       "name": "system_role",
-      "schema": "public",
+      "schema": "argos",
       "values": [
         "president",
         "vice_president",
         "secretary"
       ]
     },
-    "public.timeline_request_kind": {
+    "argos.timeline_request_kind": {
       "name": "timeline_request_kind",
-      "schema": "public",
+      "schema": "argos",
       "values": [
         "status",
         "dates"
       ]
     },
-    "public.timeline_status": {
+    "argos.timeline_status": {
       "name": "timeline_status",
-      "schema": "public",
+      "schema": "argos",
       "values": [
         "not_yet",
         "done"
       ]
     }
   },
-  "schemas": {},
+  "schemas": {
+    "argos": "argos"
+  },
   "sequences": {},
   "roles": {},
   "policies": {},

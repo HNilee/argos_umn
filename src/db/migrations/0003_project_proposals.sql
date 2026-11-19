@@ -14,7 +14,7 @@ CREATE TABLE "project_proposals" (
 	CONSTRAINT "proposal_reject_feedback" CHECK ("project_proposals"."status" <> 'rejected' or length(trim(coalesce("project_proposals"."decision_note", ''))) > 0)
 );
 --> statement-breakpoint
-ALTER TABLE "project_proposals" ADD CONSTRAINT "project_proposals_member_id_members_id_fk" FOREIGN KEY ("member_id") REFERENCES "public"."members"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
-ALTER TABLE "project_proposals" ADD CONSTRAINT "project_proposals_decided_by_accounts_id_fk" FOREIGN KEY ("decided_by") REFERENCES "public"."accounts"("id") ON DELETE set null ON UPDATE no action;--> statement-breakpoint
-ALTER TABLE "project_proposals" ADD CONSTRAINT "project_proposals_project_id_projects_id_fk" FOREIGN KEY ("project_id") REFERENCES "public"."projects"("id") ON DELETE set null ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "project_proposals" ADD CONSTRAINT "project_proposals_member_id_members_id_fk" FOREIGN KEY ("member_id") REFERENCES "argos"."members"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "project_proposals" ADD CONSTRAINT "project_proposals_decided_by_accounts_id_fk" FOREIGN KEY ("decided_by") REFERENCES "argos"."accounts"("id") ON DELETE set null ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "project_proposals" ADD CONSTRAINT "project_proposals_project_id_projects_id_fk" FOREIGN KEY ("project_id") REFERENCES "argos"."projects"("id") ON DELETE set null ON UPDATE no action;--> statement-breakpoint
 CREATE INDEX "proposal_member_idx" ON "project_proposals" USING btree ("member_id");

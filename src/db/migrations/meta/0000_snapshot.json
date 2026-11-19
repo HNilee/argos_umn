@@ -4,9 +4,9 @@
   "version": "7",
   "dialect": "postgresql",
   "tables": {
-    "public.accounts": {
+    "argos.accounts": {
       "name": "accounts",
-      "schema": "",
+      "schema": "argos",
       "columns": {
         "id": {
           "name": "id",
@@ -37,7 +37,7 @@
         "kind": {
           "name": "kind",
           "type": "account_kind",
-          "typeSchema": "public",
+          "typeSchema": "argos",
           "primaryKey": false,
           "notNull": true,
           "default": "'member'"
@@ -45,7 +45,7 @@
         "system_role": {
           "name": "system_role",
           "type": "system_role",
-          "typeSchema": "public",
+          "typeSchema": "argos",
           "primaryKey": false,
           "notNull": false
         },
@@ -93,9 +93,9 @@
       "checkConstraints": {},
       "isRLSEnabled": false
     },
-    "public.activities": {
+    "argos.activities": {
       "name": "activities",
-      "schema": "",
+      "schema": "argos",
       "columns": {
         "id": {
           "name": "id",
@@ -193,9 +193,9 @@
       "checkConstraints": {},
       "isRLSEnabled": false
     },
-    "public.activity_members": {
+    "argos.activity_members": {
       "name": "activity_members",
-      "schema": "",
+      "schema": "argos",
       "columns": {
         "activity_id": {
           "name": "activity_id",
@@ -253,9 +253,9 @@
       "checkConstraints": {},
       "isRLSEnabled": false
     },
-    "public.audit_logs": {
+    "argos.audit_logs": {
       "name": "audit_logs",
-      "schema": "",
+      "schema": "argos",
       "columns": {
         "id": {
           "name": "id",
@@ -340,9 +340,9 @@
       "checkConstraints": {},
       "isRLSEnabled": false
     },
-    "public.carousel_slides": {
+    "argos.carousel_slides": {
       "name": "carousel_slides",
-      "schema": "",
+      "schema": "argos",
       "columns": {
         "id": {
           "name": "id",
@@ -421,9 +421,9 @@
       "checkConstraints": {},
       "isRLSEnabled": false
     },
-    "public.involvement_requests": {
+    "argos.involvement_requests": {
       "name": "involvement_requests",
-      "schema": "",
+      "schema": "argos",
       "columns": {
         "id": {
           "name": "id",
@@ -460,7 +460,7 @@
         "status": {
           "name": "status",
           "type": "request_status",
-          "typeSchema": "public",
+          "typeSchema": "argos",
           "primaryKey": false,
           "notNull": true,
           "default": "'pending'"
@@ -609,9 +609,9 @@
       },
       "isRLSEnabled": false
     },
-    "public.login_attempts": {
+    "argos.login_attempts": {
       "name": "login_attempts",
-      "schema": "",
+      "schema": "argos",
       "columns": {
         "id": {
           "name": "id",
@@ -697,9 +697,9 @@
       "checkConstraints": {},
       "isRLSEnabled": false
     },
-    "public.media": {
+    "argos.media": {
       "name": "media",
-      "schema": "",
+      "schema": "argos",
       "columns": {
         "id": {
           "name": "id",
@@ -711,21 +711,21 @@
         "purpose": {
           "name": "purpose",
           "type": "media_purpose",
-          "typeSchema": "public",
+          "typeSchema": "argos",
           "primaryKey": false,
           "notNull": true
         },
         "kind": {
           "name": "kind",
           "type": "media_kind",
-          "typeSchema": "public",
+          "typeSchema": "argos",
           "primaryKey": false,
           "notNull": true
         },
         "source": {
           "name": "source",
           "type": "media_source",
-          "typeSchema": "public",
+          "typeSchema": "argos",
           "primaryKey": false,
           "notNull": true
         },
@@ -915,9 +915,9 @@
       },
       "isRLSEnabled": false
     },
-    "public.member_positions": {
+    "argos.member_positions": {
       "name": "member_positions",
-      "schema": "",
+      "schema": "argos",
       "columns": {
         "id": {
           "name": "id",
@@ -1016,9 +1016,9 @@
       "checkConstraints": {},
       "isRLSEnabled": false
     },
-    "public.members": {
+    "argos.members": {
       "name": "members",
-      "schema": "",
+      "schema": "argos",
       "columns": {
         "id": {
           "name": "id",
@@ -1067,7 +1067,7 @@
         "status": {
           "name": "status",
           "type": "member_status",
-          "typeSchema": "public",
+          "typeSchema": "argos",
           "primaryKey": false,
           "notNull": true,
           "default": "'onboarded'"
@@ -1179,9 +1179,9 @@
       "checkConstraints": {},
       "isRLSEnabled": false
     },
-    "public.positions": {
+    "argos.positions": {
       "name": "positions",
-      "schema": "",
+      "schema": "argos",
       "columns": {
         "id": {
           "name": "id",
@@ -1248,9 +1248,9 @@
       "checkConstraints": {},
       "isRLSEnabled": false
     },
-    "public.project_members": {
+    "argos.project_members": {
       "name": "project_members",
-      "schema": "",
+      "schema": "argos",
       "columns": {
         "project_id": {
           "name": "project_id",
@@ -1308,9 +1308,9 @@
       "checkConstraints": {},
       "isRLSEnabled": false
     },
-    "public.projects": {
+    "argos.projects": {
       "name": "projects",
-      "schema": "",
+      "schema": "argos",
       "columns": {
         "id": {
           "name": "id",
@@ -1374,7 +1374,7 @@
         "status": {
           "name": "status",
           "type": "project_status",
-          "typeSchema": "public",
+          "typeSchema": "argos",
           "primaryKey": false,
           "notNull": true,
           "default": "'on_progress'"
@@ -1449,9 +1449,9 @@
       "checkConstraints": {},
       "isRLSEnabled": false
     },
-    "public.sessions": {
+    "argos.sessions": {
       "name": "sessions",
-      "schema": "",
+      "schema": "argos",
       "columns": {
         "token_hash": {
           "name": "token_hash",
@@ -1517,9 +1517,9 @@
       "checkConstraints": {},
       "isRLSEnabled": false
     },
-    "public.site_content": {
+    "argos.site_content": {
       "name": "site_content",
-      "schema": "",
+      "schema": "argos",
       "columns": {
         "key": {
           "name": "key",
@@ -1571,25 +1571,25 @@
     }
   },
   "enums": {
-    "public.account_kind": {
+    "argos.account_kind": {
       "name": "account_kind",
-      "schema": "public",
+      "schema": "argos",
       "values": [
         "system",
         "member"
       ]
     },
-    "public.media_kind": {
+    "argos.media_kind": {
       "name": "media_kind",
-      "schema": "public",
+      "schema": "argos",
       "values": [
         "image",
         "video"
       ]
     },
-    "public.media_purpose": {
+    "argos.media_purpose": {
       "name": "media_purpose",
-      "schema": "public",
+      "schema": "argos",
       "values": [
         "gallery",
         "logo",
@@ -1597,44 +1597,44 @@
         "carousel"
       ]
     },
-    "public.media_source": {
+    "argos.media_source": {
       "name": "media_source",
-      "schema": "public",
+      "schema": "argos",
       "values": [
         "upload",
         "drive",
         "youtube"
       ]
     },
-    "public.member_status": {
+    "argos.member_status": {
       "name": "member_status",
-      "schema": "public",
+      "schema": "argos",
       "values": [
         "onboarded",
         "offboarded"
       ]
     },
-    "public.project_status": {
+    "argos.project_status": {
       "name": "project_status",
-      "schema": "public",
+      "schema": "argos",
       "values": [
         "done",
         "on_progress",
         "cancelled"
       ]
     },
-    "public.request_status": {
+    "argos.request_status": {
       "name": "request_status",
-      "schema": "public",
+      "schema": "argos",
       "values": [
         "pending",
         "approved",
         "rejected"
       ]
     },
-    "public.system_role": {
+    "argos.system_role": {
       "name": "system_role",
-      "schema": "public",
+      "schema": "argos",
       "values": [
         "president",
         "vice_president",
@@ -1642,7 +1642,9 @@
       ]
     }
   },
-  "schemas": {},
+  "schemas": {
+    "argos": "argos"
+  },
   "sequences": {},
   "roles": {},
   "policies": {},

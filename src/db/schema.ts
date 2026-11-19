@@ -7,8 +7,7 @@ import {
   index,
   integer,
   jsonb,
-  pgEnum,
-  pgTable,
+  pgSchema,
   primaryKey,
   text,
   timestamp,
@@ -16,16 +15,18 @@ import {
   uuid,
 } from 'drizzle-orm/pg-core';
 
-export const accountKind = pgEnum('account_kind', ['system', 'member']);
-export const systemRole = pgEnum('system_role', ['president', 'vice_president', 'secretary']);
-export const memberStatus = pgEnum('member_status', ['onboarded', 'offboarded']);
-export const projectStatus = pgEnum('project_status', ['open', 'on_progress', 'done', 'cancelled']);
-export const mediaPurpose = pgEnum('media_purpose', ['gallery', 'logo', 'avatar', 'carousel']);
-export const mediaKind = pgEnum('media_kind', ['image', 'video']);
-export const mediaSource = pgEnum('media_source', ['upload', 'drive', 'youtube']);
-export const requestStatus = pgEnum('request_status', ['pending', 'approved', 'rejected']);
-export const timelineStatus = pgEnum('timeline_status', ['not_yet', 'done']);
-export const timelineRequestKind = pgEnum('timeline_request_kind', ['status', 'dates']);
+export const argos = pgSchema('argos');
+
+export const accountKind = argos.enum('account_kind', ['system', 'member']);
+export const systemRole = argos.enum('system_role', ['president', 'vice_president', 'secretary']);
+export const memberStatus = argos.enum('member_status', ['onboarded', 'offboarded']);
+export const projectStatus = argos.enum('project_status', ['open', 'on_progress', 'done', 'cancelled']);
+export const mediaPurpose = argos.enum('media_purpose', ['gallery', 'logo', 'avatar', 'carousel']);
+export const mediaKind = argos.enum('media_kind', ['image', 'video']);
+export const mediaSource = argos.enum('media_source', ['upload', 'drive', 'youtube']);
+export const requestStatus = argos.enum('request_status', ['pending', 'approved', 'rejected']);
+export const timelineStatus = argos.enum('timeline_status', ['not_yet', 'done']);
+export const timelineRequestKind = argos.enum('timeline_request_kind', ['status', 'dates']);
 
 export type ProjectStatus = (typeof projectStatus.enumValues)[number];
 /** Project selesai atau batal: anggota dan timeline dikunci. */
@@ -40,7 +41,7 @@ const stamps = () => ({
     .$onUpdate(() => new Date()),
 });
 
-export const accounts = pgTable('accounts', {
+export const accounts = argos.table('accounts', {
   id: id(),
   username: text('username').notNull().unique(),
   passwordHash: text('password_hash').notNull(),
@@ -52,7 +53,7 @@ export const accounts = pgTable('accounts', {
   ...stamps(),
 });
 
-export const media = pgTable(
+export const media = argos.table(
   'media',
   {
     id: id(),
@@ -81,7 +82,7 @@ export const media = pgTable(
   ],
 );
 
-export const members = pgTable('members', {
+export const members = argos.table('members', {
   id: id(),
   accountId: uuid('account_id')
     .notNull()
@@ -102,7 +103,7 @@ export const members = pgTable('members', {
   ...stamps(),
 });
 
-export const positions = pgTable('positions', {
+export const positions = argos.table('positions', {
   id: id(),
   name: text('name').notNull().unique(),
   grantsCommittee: boolean('grants_committee').notNull().default(false),
@@ -111,7 +112,7 @@ export const positions = pgTable('positions', {
   ...stamps(),
 });
 
-export const memberPositions = pgTable(
+export const memberPositions = argos.table(
   'member_positions',
   {
     id: id(),
@@ -139,7 +140,7 @@ const contentColumns = () => ({
   ...stamps(),
 });
 
-export const projects = pgTable('projects', {
+export const projects = argos.table('projects', {
   ...contentColumns(),
   status: projectStatus('status').notNull().default('on_progress'),
   projectUrl: text('project_url'),
@@ -150,14 +151,14 @@ export const projects = pgTable('projects', {
   docsUrlVisible: boolean('docs_url_visible').notNull().default(false),
 });
 
-export const activities = pgTable('activities', {
+export const activities = argos.table('activities', {
   ...contentColumns(),
   activityDate: date('activity_date').notNull(),
   registrationOpen: boolean('registration_open').notNull().default(false),
   registrationUrl: text('registration_url'),
 });
 
-export const projectTimelineItems = pgTable(
+export const projectTimelineItems = argos.table(
   'project_timeline_items',
   {
     id: id(),
@@ -176,7 +177,7 @@ export const projectTimelineItems = pgTable(
   (t) => [check('timeline_dates', sql`${t.endDate} >= ${t.startDate}`), index('timeline_project_idx').on(t.projectId)],
 );
 
-export const projectMembers = pgTable(
+export const projectMembers = argos.table(
   'project_members',
   {
     projectId: uuid('project_id')
@@ -189,7 +190,7 @@ export const projectMembers = pgTable(
   (t) => [primaryKey({ columns: [t.projectId, t.memberId] })],
 );
 
-export const activityMembers = pgTable(
+export const activityMembers = argos.table(
   'activity_members',
   {
     activityId: uuid('activity_id')
@@ -202,7 +203,7 @@ export const activityMembers = pgTable(
   (t) => [primaryKey({ columns: [t.activityId, t.memberId] })],
 );
 
-export const involvementRequests = pgTable(
+export const involvementRequests = argos.table(
   'involvement_requests',
   {
     id: id(),
@@ -229,7 +230,7 @@ export const involvementRequests = pgTable(
   ],
 );
 
-export const timelineRequests = pgTable(
+export const timelineRequests = argos.table(
   'timeline_requests',
   {
     id: id(),
@@ -263,7 +264,7 @@ export const timelineRequests = pgTable(
 export type ProposalStage = { title: string; description: string; startDate: string; endDate: string };
 
 /** Usulan project dari member. Timeline disimpan sebagai jsonb sampai usulan diterima dan disalin ke project_timeline_items. */
-export const projectProposals = pgTable(
+export const projectProposals = argos.table(
   'project_proposals',
   {
     id: id(),
@@ -286,7 +287,7 @@ export const projectProposals = pgTable(
   ],
 );
 
-export const siteContent = pgTable('site_content', {
+export const siteContent = argos.table('site_content', {
   key: text('key').primaryKey(),
   value: jsonb('value').notNull(),
   updatedBy: uuid('updated_by').references(() => accounts.id, { onDelete: 'set null' }),
@@ -296,7 +297,7 @@ export const siteContent = pgTable('site_content', {
     .$onUpdate(() => new Date()),
 });
 
-export const carouselSlides = pgTable('carousel_slides', {
+export const carouselSlides = argos.table('carousel_slides', {
   id: id(),
   mediaId: uuid('media_id')
     .notNull()
@@ -308,7 +309,7 @@ export const carouselSlides = pgTable('carousel_slides', {
   ...stamps(),
 });
 
-export const sessions = pgTable(
+export const sessions = argos.table(
   'sessions',
   {
     tokenHash: text('token_hash').primaryKey(),
@@ -321,7 +322,7 @@ export const sessions = pgTable(
   (t) => [index('sessions_account_idx').on(t.accountId)],
 );
 
-export const loginAttempts = pgTable(
+export const loginAttempts = argos.table(
   'login_attempts',
   {
     id: id(),
@@ -333,7 +334,7 @@ export const loginAttempts = pgTable(
   (t) => [index('login_attempts_lookup').on(t.username, t.attemptedAt), index('login_attempts_ip').on(t.ip, t.attemptedAt)],
 );
 
-export const auditLogs = pgTable(
+export const auditLogs = argos.table(
   'audit_logs',
   {
     id: id(),
