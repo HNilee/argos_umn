@@ -17,7 +17,10 @@
     "loading": "Memuat",
     "theme": "Ganti tema terang atau gelap",
     "information": "Information",
-    "proposals": "Usulan Project"
+    "proposals": "Usulan Project",
+    "dashboard": "Dashboard",
+    "timeline": "Timeline",
+    "notifications": "Notifikasi"
   },
   "home": {
     "viewProjects": "Lihat Project",
@@ -279,7 +282,9 @@
     "buttonNeedsUrl": "Tombol yang ditampilkan wajib punya URL."
   },
   "committee": {
-    "dashboard": "Ringkasan",
+    "dashboard": "Dashboard",
+    "timeline": "Timeline",
+    "notifications": "Notifikasi",
     "landing": "Landing Page",
     "projects": "Project",
     "activities": "Aktivitas",

@@ -17,6 +17,7 @@ import {
   projects,
   sessions,
   timelineRequests,
+  notifications,
 } from '@/db/schema';
 import { monthEnd, monthStart, todayInJakarta } from '@/lib/access';
 import { audit } from '@/lib/audit';
@@ -176,6 +177,35 @@ export async function decideTimelineRequest(requestId: string, approve: boolean,
       .update(timelineRequests)
       .set({ status: approve ? 'approved' : 'rejected', decidedBy: user.accountId, decidedAt: new Date(), decisionNote: decisionNote.trim().slice(0, 500) || null })
       .where(eq(timelineRequests.id, id));
+
+    const [memberRow] = await tx
+      .select({ accountId: members.accountId })
+      .from(members)
+      .where(eq(members.id, found.request.memberId));
+
+    if (memberRow?.accountId) {
+      const noteText = decisionNote.trim().slice(0, 500);
+      if (!approve) {
+        await tx.insert(notifications).values({
+          recipientAccountId: memberRow.accountId,
+          type: 'timeline_decision',
+          title: `Pengajuan deadline ditolak: ${found.item.title}`,
+          body: noteText ? `Alasan penolakan: ${noteText}` : `Pengajuan deadline untuk "${found.item.title}" ditolak oleh komite.`,
+          link: '/me/timeline',
+          isRead: false,
+        });
+      } else {
+        await tx.insert(notifications).values({
+          recipientAccountId: memberRow.accountId,
+          type: 'timeline_decision',
+          title: `Pengajuan deadline disetujui: ${found.item.title}`,
+          body: `Pengajuan deadline untuk "${found.item.title}" telah disetujui oleh komite.`,
+          link: '/me/timeline',
+          isRead: false,
+        });
+      }
+    }
+
     if (!approve) return null;
     const { request, item } = found;
     const change =

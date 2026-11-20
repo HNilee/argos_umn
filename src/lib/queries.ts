@@ -14,6 +14,7 @@ import {
   projectTimelineItems,
   projects,
   siteContent,
+  notifications,
   type ProjectStatus,
 } from '@/db/schema';
 import { type AboutContent, DEFAULT_ABOUT } from './about-defaults';
@@ -271,3 +272,186 @@ export async function projectTimeline(projectId: string, { withDescription = fal
 }
 
 export type TimelineEntry = { id: string; title: string; startDate: string; endDate: string; status: 'not_yet' | 'done'; completedAt: string | null };
+
+export type GanttTimelineItem = {
+  id: string;
+  projectId: string;
+  title: string;
+  description: string;
+  startDate: string;
+  endDate: string;
+  status: 'not_yet' | 'done';
+  completedAt: string | null;
+  sortOrder: number;
+};
+
+export type GanttProjectMember = {
+  id: string;
+  fullName: string;
+  slug: string;
+  photoKey: string | null;
+};
+
+export type GanttProject = {
+  id: string;
+  name: string;
+  slug: string;
+  status: ProjectStatus;
+  isPublished: boolean;
+  coverKey: string | null;
+  members: GanttProjectMember[];
+  items: GanttTimelineItem[];
+};
+
+export async function fetchGanttProjects(projectIds?: string[]): Promise<GanttProject[]> {
+  if (projectIds && projectIds.length === 0) return [];
+
+  const projectRows = await db
+    .select({
+      id: projects.id,
+      name: projects.name,
+      slug: projects.slug,
+      status: projects.status,
+      isPublished: projects.isPublished,
+      coverKey: coverMedia.storageKey,
+    })
+    .from(projects)
+    .leftJoin(coverMedia, and(eq(coverMedia.projectId, projects.id), eq(coverMedia.isCover, true)))
+    .where(projectIds ? inArray(projects.id, projectIds) : undefined)
+    .orderBy(desc(projects.createdAt));
+
+  if (projectRows.length === 0) return [];
+
+  const foundIds = projectRows.map((p) => p.id);
+
+  const [itemRows, memberRows] = await Promise.all([
+    db
+      .select({
+        id: projectTimelineItems.id,
+        projectId: projectTimelineItems.projectId,
+        title: projectTimelineItems.title,
+        description: projectTimelineItems.description,
+        startDate: projectTimelineItems.startDate,
+        endDate: projectTimelineItems.endDate,
+        status: projectTimelineItems.status,
+        completedAt: projectTimelineItems.completedAt,
+        sortOrder: projectTimelineItems.sortOrder,
+      })
+      .from(projectTimelineItems)
+      .where(inArray(projectTimelineItems.projectId, foundIds))
+      .orderBy(asc(projectTimelineItems.sortOrder), asc(projectTimelineItems.startDate)),
+    db
+      .select({
+        projectId: projectMembers.projectId,
+        id: members.id,
+        fullName: members.fullName,
+        slug: members.slug,
+        photoKey: media.storageKey,
+      })
+      .from(projectMembers)
+      .innerJoin(members, eq(members.id, projectMembers.memberId))
+      .leftJoin(media, eq(media.id, members.photoMediaId))
+      .where(inArray(projectMembers.projectId, foundIds))
+      .orderBy(asc(members.fullName)),
+  ]);
+
+  const itemsByProject = new Map<string, GanttTimelineItem[]>();
+  for (const item of itemRows) {
+    const list = itemsByProject.get(item.projectId) ?? [];
+    list.push(item);
+    itemsByProject.set(item.projectId, list);
+  }
+
+  const membersByProject = new Map<string, GanttProjectMember[]>();
+  for (const m of memberRows) {
+    const list = membersByProject.get(m.projectId) ?? [];
+    list.push({ id: m.id, fullName: m.fullName, slug: m.slug, photoKey: m.photoKey });
+    membersByProject.set(m.projectId, list);
+  }
+
+  const today = todayInJakarta();
+  const addDaysIso = (dStr: string, n: number) => {
+    const [y, m, d] = dStr.split('-').map(Number);
+    const date = new Date(Date.UTC(y, m - 1, d + n));
+    return date.toISOString().split('T')[0];
+  };
+
+  return projectRows.map((p) => {
+    const existingItems = itemsByProject.get(p.id) ?? [];
+    const items =
+      existingItems.length > 0
+        ? existingItems
+        : [
+            {
+              id: `auto-${p.id}-1`,
+              projectId: p.id,
+              title: 'Perencanaan & Riset Awal',
+              description: 'Penyusunan target luaran dan perancangan awal.',
+              startDate: today,
+              endDate: addDaysIso(today, 14),
+              status: 'not_yet' as const,
+              completedAt: null,
+              sortOrder: 1,
+            },
+            {
+              id: `auto-${p.id}-2`,
+              projectId: p.id,
+              title: 'Pengembangan & Implementasi',
+              description: 'Pengerjaan sistem teknis dan integrasi modul.',
+              startDate: addDaysIso(today, 15),
+              endDate: addDaysIso(today, 38),
+              status: 'not_yet' as const,
+              completedAt: null,
+              sortOrder: 2,
+            },
+            {
+              id: `auto-${p.id}-3`,
+              projectId: p.id,
+              title: 'Uji Coba & Finalisasi',
+              description: 'Uji coba performa dan rilis.',
+              startDate: addDaysIso(today, 39),
+              endDate: addDaysIso(today, 60),
+              status: 'not_yet' as const,
+              completedAt: null,
+              sortOrder: 3,
+            },
+          ];
+
+    return {
+      ...p,
+      items,
+      members: membersByProject.get(p.id) ?? [],
+    };
+  });
+}
+
+export async function getTimelineForAdmin({ projectId }: { projectId?: string } = {}): Promise<GanttProject[]> {
+  return fetchGanttProjects(projectId ? [projectId] : undefined);
+}
+
+export async function getTimelineForMember(memberId: string, { projectId }: { projectId?: string } = {}): Promise<GanttProject[]> {
+  const memberProj = await db
+    .select({ projectId: projectMembers.projectId })
+    .from(projectMembers)
+    .where(and(eq(projectMembers.memberId, memberId), projectId ? eq(projectMembers.projectId, projectId) : undefined));
+
+  const pids = memberProj.map((m) => m.projectId);
+  return fetchGanttProjects(pids);
+}
+
+export async function getNotifications(accountId: string, limit = 20) {
+  return db
+    .select()
+    .from(notifications)
+    .where(eq(notifications.recipientAccountId, accountId))
+    .orderBy(desc(notifications.createdAt))
+    .limit(limit);
+}
+
+export async function countUnreadNotifications(accountId: string): Promise<number> {
+  const [row] = await db
+    .select({ count: sql<number>`count(*)::int` })
+    .from(notifications)
+    .where(and(eq(notifications.recipientAccountId, accountId), eq(notifications.isRead, false)));
+  return row?.count ?? 0;
+}

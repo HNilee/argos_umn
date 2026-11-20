@@ -61,7 +61,7 @@ export async function loginAction(_previous: ActionResult | null, formData: Form
 
   await createSession(row.account.id);
   await db.update(accounts).set({ lastLoginAt: new Date() }).where(eq(accounts.id, row.account.id));
-  redirect(row.account.mustChangePassword ? '/account/password' : row.account.kind === 'system' ? '/committee' : '/me/profile');
+  redirect(row.account.mustChangePassword ? '/account/password' : row.account.kind === 'system' ? '/committee' : '/me');
 }
 
 export async function logoutAction() {

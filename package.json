@@ -16,6 +16,8 @@
     "db:migrate": "tsx src/db/migrate.ts",
     "db:seed": "tsx src/db/seed.ts",
     "db:demo": "tsx src/db/demo.ts",
+    "db:studio": "drizzle-kit studio",
+    "demo:accounts": "tsx src/db/demo-accounts.ts",
     "account:reset": "tsx src/db/account-reset.ts",
     "media:clean": "tsx src/db/media-clean.ts",
     "db:content": "tsx --conditions=react-server src/db/content.ts"

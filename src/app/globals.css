@@ -93,6 +93,37 @@
   outline-offset: 2px;
 }
 
+/* Argos Custom Scrollbars */
+::-webkit-scrollbar {
+  width: 7px;
+  height: 7px;
+}
+::-webkit-scrollbar-track {
+  background: var(--color-surface-muted);
+}
+::-webkit-scrollbar-thumb {
+  background: #4e5056;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-teal-solid);
+}
+
+.timeline-scrollbar::-webkit-scrollbar {
+  height: 8px;
+}
+.timeline-scrollbar::-webkit-scrollbar-track {
+  background: var(--color-surface-muted);
+  border-radius: 4px;
+}
+.timeline-scrollbar::-webkit-scrollbar-thumb {
+  background: #50919f;
+  border-radius: 4px;
+}
+.timeline-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: var(--color-brand-orange);
+}
+
 .on-dark :focus-visible {
   outline-color: var(--color-brand-orange);
 }

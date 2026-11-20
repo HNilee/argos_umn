@@ -17,7 +17,10 @@
     "loading": "Loading",
     "theme": "Switch between light and dark theme",
     "information": "Information",
-    "proposals": "Project Proposals"
+    "proposals": "Project Proposals",
+    "dashboard": "Dashboard",
+    "timeline": "Timeline",
+    "notifications": "Notifications"
   },
   "home": {
     "viewProjects": "View Projects",
@@ -279,7 +282,9 @@
     "buttonNeedsUrl": "A visible button needs a URL."
   },
   "committee": {
-    "dashboard": "Overview",
+    "dashboard": "Dashboard",
+    "timeline": "Timeline",
+    "notifications": "Notifications",
     "landing": "Landing Page",
     "projects": "Projects",
     "activities": "Activities",

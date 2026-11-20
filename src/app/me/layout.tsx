@@ -7,10 +7,13 @@ export default async function MemberLayout({ children }: { children: ReactNode }
   const user = await requireMember();
   const t = await getTranslations('nav');
   const items = [
-    { href: '/me/profile', label: t('myProfile') },
+    { href: '/me', label: t('dashboard') },
+    { href: '/me/timeline', label: t('timeline') },
     { href: '/me/projects', label: t('myProjects') },
-    { href: '/me/information', label: t('information') },
     { href: '/me/proposals', label: t('proposals') },
+    { href: '/me/notifications', label: t('notifications') },
+    { href: '/me/profile', label: t('myProfile') },
+    { href: '/me/information', label: t('information') },
     ...(user.isCommittee ? [{ href: '/committee', label: t('committee') }] : []),
   ];
   return <Suspense><PanelShell title="Argos Club @ UMN" items={items}>{children}</PanelShell></Suspense>;

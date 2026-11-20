@@ -1,6 +1,7 @@
 'use server';
 
 import { and, asc, count, eq, inArray } from 'drizzle-orm';
+import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 import { z } from 'zod';
 import { db } from '@/db';
@@ -169,6 +170,37 @@ export async function updateTimelineItem(itemId: string, formData: FormData): Pr
   return { ok: true };
 }
 
+export async function extendTimelineItemDeadline(itemId: string, newEndDate: string): Promise<ActionResult> {
+  const user = await requireCommittee();
+  const id = uuid.safeParse(itemId);
+  if (!id.success) return { error: 'common.invalid' };
+
+  const item = await loadTimelineItem(id.data);
+  if (!item) return { error: 'common.error' };
+  if (item.status === 'done') return { error: 'Tahapan yang sudah selesai tidak dapat diubah lagi.' };
+
+  const parsedDate = z.iso.date().safeParse(newEndDate);
+  if (!parsedDate.success) return { error: 'timeline.invalid' };
+
+  if (parsedDate.data < item.startDate) return { error: 'timeline.invalid' };
+  if (timelineLocked(await projectStatusOf(item.projectId))) return { error: 'timeline.locked' };
+
+  await db
+    .update(projectTimelineItems)
+    .set({ endDate: parsedDate.data })
+    .where(eq(projectTimelineItems.id, item.id));
+
+  await audit(user.accountId, 'timeline.extend_deadline', 'project', item.projectId, {
+    itemId: item.id,
+    oldEndDate: item.endDate,
+    newEndDate: parsedDate.data,
+  });
+
+  revalidatePath('/committee/timeline');
+  revalidatePath('/me/timeline');
+  return { ok: true };
+}
+
 export async function deleteTimelineItem(itemId: string): Promise<ActionResult> {
   const user = await requireCommittee();
   const item = await loadTimelineItem(itemId);
@@ -214,6 +246,47 @@ export async function createProject(formData: FormData): Promise<ActionResult> {
   const name = z.string().trim().min(1).max(120).safeParse(formData.get('name'));
   if (!name.success) return { error: 'common.invalid' };
   const [project] = await db.insert(projects).values({ name: name.data, slug: await uniqueSlug(projects, name.data) }).returning();
+
+  // Otomatis buatkan 3 tahapan milestone standar (~60 hari / 2 bulan) agar langsung muncul di timeline roadmap
+  const today = todayInJakarta();
+  const addDaysIso = (dStr: string, n: number) => {
+    const [y, m, d] = dStr.split('-').map(Number);
+    const date = new Date(Date.UTC(y, m - 1, d + n));
+    return date.toISOString().split('T')[0];
+  };
+
+  await db.insert(projectTimelineItems).values([
+    {
+      projectId: project.id,
+      title: 'Perencanaan & Riset Awal',
+      description: 'Penyusunan target luaran dan perancangan arsitektur.',
+      startDate: today,
+      endDate: addDaysIso(today, 14),
+      status: 'not_yet',
+      sortOrder: 1,
+    },
+    {
+      projectId: project.id,
+      title: 'Pengembangan & Implementasi',
+      description: 'Pengerjaan modul teknis dan integrasi sistem.',
+      startDate: addDaysIso(today, 15),
+      endDate: addDaysIso(today, 38),
+      status: 'not_yet',
+      sortOrder: 2,
+    },
+    {
+      projectId: project.id,
+      title: 'Uji Coba, QA & Finalisasi',
+      description: 'Validasi performa, perbaikan dan rilis publik.',
+      startDate: addDaysIso(today, 39),
+      endDate: addDaysIso(today, 60),
+      status: 'not_yet',
+      sortOrder: 3,
+    },
+  ]);
+
+  revalidatePath('/committee/timeline');
+  revalidatePath('/me/timeline');
   await audit(user.accountId, 'project.create', 'project', project.id, { name: name.data });
   redirect(`/committee/projects/${project.id}`);
 }
@@ -221,6 +294,8 @@ export async function createProject(formData: FormData): Promise<ActionResult> {
 export async function deleteProject(projectId: string): Promise<ActionResult> {
   const user = await requireCommittee();
   const [project] = await db.delete(projects).where(eq(projects.id, uuid.parse(projectId))).returning();
+  revalidatePath('/committee/timeline');
+  revalidatePath('/me/timeline');
   await audit(user.accountId, 'project.delete', 'project', projectId, { name: project?.name });
   redirect('/committee/projects');
 }

@@ -27,6 +27,7 @@ export const mediaSource = argos.enum('media_source', ['upload', 'drive', 'youtu
 export const requestStatus = argos.enum('request_status', ['pending', 'approved', 'rejected']);
 export const timelineStatus = argos.enum('timeline_status', ['not_yet', 'done']);
 export const timelineRequestKind = argos.enum('timeline_request_kind', ['status', 'dates']);
+export const notificationType = argos.enum('notification_type', ['timeline_request', 'timeline_decision', 'general']);
 
 export type ProjectStatus = (typeof projectStatus.enumValues)[number];
 /** Project selesai atau batal: anggota dan timeline dikunci. */
@@ -346,4 +347,23 @@ export const auditLogs = argos.table(
     createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
   },
   (t) => [index('audit_logs_created_idx').on(t.createdAt)],
+);
+
+export const notifications = argos.table(
+  'notifications',
+  {
+    id: id(),
+    recipientAccountId: uuid('recipient_account_id')
+      .notNull()
+      .references(() => accounts.id, { onDelete: 'cascade' }),
+    type: notificationType('type').notNull().default('general'),
+    title: text('title').notNull(),
+    body: text('body').notNull(),
+    link: text('link'),
+    isRead: boolean('is_read').notNull().default(false),
+    ...stamps(),
+  },
+  (t) => [
+    index('notifications_recipient_idx').on(t.recipientAccountId, t.isRead, t.createdAt),
+  ],
 );

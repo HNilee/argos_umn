@@ -20,3 +20,7 @@ playwright-report/
 # Hanya foto WebP yang ikut repo; video dan surat tetap lokal.
 /assets/photo/*
 !/assets/photo/*.webp
+
+# Demo accounts data
+src/db/demo-accounts.ts
+demo-credentials.txt

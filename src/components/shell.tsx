@@ -9,6 +9,8 @@ import { MobileNav } from './mobile-nav';
 import { NavLinks } from './nav-links';
 import { ThemeToggle } from './theme-toggle';
 import { Container, buttonClass } from './ui';
+import { NotificationBell } from './notification-bell';
+import { countUnreadNotifications, getNotifications } from '@/lib/queries';
 
 export async function getPublicNav() {
   const t = await getTranslations('nav');
@@ -30,8 +32,8 @@ export async function Header() {
   const t = await getTranslations('nav');
   const user = await getCurrentUser();
   const { items, prefix } = await getPublicNav();
-  const accountHref = user ? (user.memberId ? '/me/profile' : '/committee') : '/login';
-  const accountLabel = user ? (user.memberId ? t('myProfile') : t('committee')) : t('login');
+  const accountHref = user ? (user.memberId ? '/me' : '/committee') : '/login';
+  const accountLabel = user ? (user.memberId ? t('dashboard') : t('committee')) : t('login');
 
   return (
     <header className="on-dark sticky top-0 z-40 border-b border-white/10 bg-ink/90 text-white backdrop-blur-md">
@@ -89,6 +91,23 @@ type NavItem = { href: string; label: string; badge?: number };
 export async function PanelShell({ title, items, children }: { title: string; items: NavItem[]; children: React.ReactNode }) {
   const t = await getTranslations('nav');
   const user = await getCurrentUser();
+  const [unreadNotificationsCount, rawNotifications] = user
+    ? await Promise.all([
+        countUnreadNotifications(user.accountId),
+        getNotifications(user.accountId, 5),
+      ])
+    : [0, []];
+
+  const recentNotifications = rawNotifications.map((n) => ({
+    id: n.id,
+    type: n.type,
+    title: n.title,
+    body: n.body,
+    link: n.link,
+    isRead: n.isRead,
+    createdAt: n.createdAt,
+  }));
+
   return (
     <div className="min-h-screen bg-surface-muted md:grid md:grid-cols-[240px_1fr]">
       <aside className="on-dark bg-ink p-4 text-[#d8dadd] md:sticky md:top-0 md:flex md:h-screen md:flex-col">
@@ -115,7 +134,23 @@ export async function PanelShell({ title, items, children }: { title: string; it
           <button className="mt-2 min-h-11 w-full cursor-pointer rounded-sm border border-white/30 px-3 hover:bg-white/10">{t('logout')}</button>
         </form>
       </aside>
-      <main id="content" className="min-w-0 p-4 md:p-8">{children}</main>
+      <main id="content" className="min-w-0 flex flex-col">
+        <header className="sticky top-0 z-30 flex h-14 items-center justify-between border-b border-line bg-surface/85 px-4 backdrop-blur-md md:px-8">
+          <div className="flex items-center gap-2 text-xs font-semibold text-gray-500">
+            <span>Argos Portal</span>
+            <span>/</span>
+            <span className="text-heading font-bold">{title}</span>
+          </div>
+          <div className="flex items-center gap-3">
+            <NotificationBell
+              initialNotifications={recentNotifications}
+              initialUnreadCount={unreadNotificationsCount}
+              notificationsUrl={user?.isCommittee ? '/committee/notifications' : '/me/notifications'}
+            />
+          </div>
+        </header>
+        <div className="p-4 md:p-8 flex-1">{children}</div>
+      </main>
     </div>
   );
 }

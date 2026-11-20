@@ -13,14 +13,16 @@ export default async function CommitteeLayout({ children }: { children: ReactNod
   const [{ n }] = await db.select({ n: count() }).from(involvementRequests).where(eq(involvementRequests.status, 'pending'));
   const items = [
     { href: '/committee', label: t('dashboard') },
+    { href: '/committee/timeline', label: t('timeline') },
     { href: '/committee/landing', label: t('landing') },
     { href: '/committee/projects', label: t('projects') },
     { href: '/committee/activities', label: t('activities') },
     { href: '/committee/members', label: t('members') },
     { href: '/committee/requests', label: t('requests'), badge: n },
+    { href: '/committee/notifications', label: t('notifications') },
     { href: '/committee/system', label: t('system') },
     { href: '/committee/audit', label: t('audit') },
-    ...(user.memberId ? [{ href: '/me/profile', label: nav('myProfile') }] : []),
+    ...(user.memberId ? [{ href: '/me', label: nav('dashboard') }] : []),
   ];
   return <Suspense><PanelShell title="Committee" items={items}>{children}</PanelShell></Suspense>;
 }
