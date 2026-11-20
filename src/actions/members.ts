@@ -157,6 +157,31 @@ export async function sendTimelineRequest(itemId: string, formData: FormData): P
     .onConflictDoNothing()
     .returning();
   if (!inserted.length) return { error: 'me.requestDuplicate' };
+
+  // Kirim notifikasi otomatis ke seluruh akun Admin/Komite
+  const committeeAccounts = await db
+    .select({ id: accounts.id })
+    .from(accounts)
+    .where(eq(accounts.kind, 'system'));
+
+  if (committeeAccounts.length > 0) {
+    const memberRow = user.memberId
+      ? await db.select({ name: members.fullName }).from(members).where(eq(members.id, user.memberId))
+      : [];
+    const memberName = memberRow[0]?.name || 'Member';
+
+    await db.insert(notifications).values(
+      committeeAccounts.map((c) => ({
+        recipientAccountId: c.id,
+        type: 'timeline_request' as const,
+        title: `Pengajuan Deadline: ${row.item.title}`,
+        body: `${memberName} mengajukan perpanjangan deadline untuk "${row.item.title}". Alasan: ${note || '-'}`,
+        link: '/committee/requests',
+        isRead: false,
+      }))
+    );
+  }
+
   await audit(user.accountId, 'timeline.request', 'project', row.item.projectId, { itemId: row.item.id, kind: parsed.data.kind });
   return { ok: true };
 }

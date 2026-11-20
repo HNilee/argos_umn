@@ -3,7 +3,7 @@
 import { and, count, eq } from 'drizzle-orm';
 import { z } from 'zod';
 import { db } from '@/db';
-import { projectMembers, projectProposals, projectTimelineItems, projects } from '@/db/schema';
+import { accounts, members, notifications, projectMembers, projectProposals, projectTimelineItems, projects } from '@/db/schema';
 import { audit } from '@/lib/audit';
 import { requireCommittee, requireMember } from '@/lib/auth';
 import { uniqueSlug } from '@/lib/slug';
@@ -50,6 +50,26 @@ export async function submitProposal(formData: FormData): Promise<ActionResult> 
   if (n >= MAX_PENDING) return { error: 'proposal.tooMany' };
 
   const [row] = await db.insert(projectProposals).values({ memberId: user.memberId, ...parsed.data }).returning();
+
+  // Kirim notifikasi otomatis ke seluruh akun Admin/Komite
+  const committeeAccounts = await db
+    .select({ id: accounts.id })
+    .from(accounts)
+    .where(eq(accounts.kind, 'system'));
+  if (committeeAccounts.length > 0) {
+    const [m] = await db.select({ name: members.fullName }).from(members).where(eq(members.id, user.memberId));
+    await db.insert(notifications).values(
+      committeeAccounts.map((c) => ({
+        recipientAccountId: c.id,
+        type: 'general' as const,
+        title: `Usulan Project Baru: ${row.name}`,
+        body: `${m?.name || 'Seorang member'} mengajukan usulan project baru "${row.name}".`,
+        link: '/committee/requests',
+        isRead: false,
+      }))
+    );
+  }
+
   await audit(user.accountId, 'proposal.submit', 'project_proposal', row.id, { name: row.name });
   return { ok: true };
 }
@@ -73,7 +93,29 @@ export async function decideProposal(proposalId: string, approve: boolean, decis
       .set({ status: approve ? 'approved' : 'rejected', decidedBy: user.accountId, decidedAt: new Date(), decisionNote: note || null })
       .where(and(eq(projectProposals.id, id), eq(projectProposals.status, 'pending')))
       .returning();
-    if (!row || !approve) return null;
+    if (!row) return null;
+
+    // Kirim notifikasi keputusan ke member pengusul
+    const [memberRow] = await tx
+      .select({ accountId: members.accountId })
+      .from(members)
+      .where(eq(members.id, row.memberId));
+    if (memberRow?.accountId) {
+      await tx.insert(notifications).values({
+        recipientAccountId: memberRow.accountId,
+        type: 'general',
+        title: approve ? `Usulan project disetujui: ${row.name}` : `Usulan project ditolak: ${row.name}`,
+        body: note
+          ? `Catatan komite: ${note}`
+          : approve
+          ? `Usulan project "${row.name}" telah disetujui oleh komite.`
+          : `Usulan project "${row.name}" ditolak oleh komite.`,
+        link: '/me/proposals',
+        isRead: false,
+      });
+    }
+
+    if (!approve) return null;
 
     const [project] = await tx
       .insert(projects)
